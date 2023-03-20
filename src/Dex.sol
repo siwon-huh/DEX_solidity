@@ -21,37 +21,8 @@ contract Dex is ERC20 {
         decimal = 10 ** 18;
         first_LP = true;
     }
-
-    function swap(uint256 tokenXAmount, uint256 tokenYAmount, uint256 tokenMinimumOutputAmount) public returns (uint256 outputAmount){
-        require(!(tokenXAmount == 0 && tokenYAmount == 0), "invalid input");
-        require(!(tokenXAmount != 0 && tokenYAmount != 0), "invalid input");
-
-        tokenX_in_LP = tokenX.balanceOf(address(this));
-        tokenY_in_LP = tokenY.balanceOf(address(this));
-        
-        if(tokenXAmount > 0){
-            outputAmount = tokenY_in_LP * (tokenXAmount * 999 / 1000) / (tokenX_in_LP + (tokenXAmount * 999 / 1000));
-
-            require(outputAmount >= tokenMinimumOutputAmount, "minimum ouput amount check failed");
-            tokenY_in_LP -= outputAmount ;
-            tokenX_in_LP += tokenXAmount;
-            tokenX.transferFrom(msg.sender, address(this), tokenXAmount);
-            tokenY.transfer(msg.sender, outputAmount );
-        }
-        else{
-            outputAmount = tokenX_in_LP * (tokenYAmount * 999 / 1000) / (tokenY_in_LP + (tokenYAmount * 999 / 1000));
-
-            require(outputAmount >= tokenMinimumOutputAmount, "minimum ouput amount check failed");
-            tokenX_in_LP -= outputAmount;
-            tokenY_in_LP += tokenXAmount;
-            tokenY.transferFrom(msg.sender, address(this), tokenYAmount);
-            tokenX.transfer(msg.sender, outputAmount);
-        }
-        return outputAmount;
-    }
-
     function addLiquidity(uint256 tokenXAmount, uint256 tokenYAmount, uint256 minimumLPTokenAmount) public returns (uint256 LPTokenAmount){
-        require(tokenXAmount != 0 && tokenYAmount != 0, "AddLiquidity invalid initialization check error - 1");
+        require(!(tokenXAmount == 0 && tokenYAmount == 0), "AddLiquidity invalid initialization check error - 1");
         require(tokenXAmount != 0, "AddLiquidity invalid initialization check error - 2");
         require(tokenYAmount != 0, "AddLiquidity invalid initialization check error - 3");
         require(tokenX.allowance(msg.sender, address(this)) >= tokenXAmount, "ERC20: insufficient allowance");
@@ -61,11 +32,13 @@ contract Dex is ERC20 {
         
         tokenX_in_LP = tokenX.balanceOf(address(this));
         tokenY_in_LP = tokenY.balanceOf(address(this));
+
         if(first_LP){
             LPTokenAmount = Math.sqrt((tokenXAmount + tokenX_in_LP) * (tokenYAmount + tokenY_in_LP) / decimal);
             first_LP = false;
         }
         else{
+            require(tokenX_in_LP * tokenYAmount == tokenY_in_LP * tokenXAmount, "AddLiquidity imbalance add liquidity test error");
             LPTokenAmount = Math.min(
                 totalSupply() * tokenXAmount / tokenX_in_LP,
                 totalSupply() * tokenYAmount / tokenY_in_LP
@@ -93,6 +66,34 @@ contract Dex is ERC20 {
         tokenX.transfer(msg.sender, remove_tokenXAmount_in_LP);
         tokenY.transfer(msg.sender, remove_tokenYAmount_in_LP);
         return (remove_tokenXAmount_in_LP, remove_tokenYAmount_in_LP);
+    }
+
+    function swap(uint256 tokenXAmount, uint256 tokenYAmount, uint256 tokenMinimumOutputAmount) public returns (uint256 outputAmount){
+        require(!(tokenXAmount == 0 && tokenYAmount == 0), "invalid input");
+        require(!(tokenXAmount != 0 && tokenYAmount != 0), "invalid input");
+
+        tokenX_in_LP = tokenX.balanceOf(address(this));
+        tokenY_in_LP = tokenY.balanceOf(address(this));
+        
+        if(tokenXAmount > 0){
+            outputAmount = tokenY_in_LP * (tokenXAmount * 999 / 1000) / (tokenX_in_LP + (tokenXAmount * 999 / 1000));
+
+            require(outputAmount >= tokenMinimumOutputAmount, "minimum ouput amount check failed");
+            tokenY_in_LP -= outputAmount ;
+            tokenX_in_LP += tokenXAmount;
+            tokenX.transferFrom(msg.sender, address(this), tokenXAmount);
+            tokenY.transfer(msg.sender, outputAmount );
+        }
+        else{
+            outputAmount = tokenX_in_LP * (tokenYAmount * 999 / 1000) / (tokenY_in_LP + (tokenYAmount * 999 / 1000));
+
+            require(outputAmount >= tokenMinimumOutputAmount, "minimum ouput amount check failed");
+            tokenX_in_LP -= outputAmount;
+            tokenY_in_LP += tokenXAmount;
+            tokenY.transferFrom(msg.sender, address(this), tokenYAmount);
+            tokenX.transfer(msg.sender, outputAmount);
+        }
+        return outputAmount;
     }
     function transfer(address to, uint256 lpAmount) public virtual override returns (bool){}
 
