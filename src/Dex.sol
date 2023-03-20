@@ -75,7 +75,7 @@ contract Dex is ERC20 {
         tokenX_in_LP = tokenX.balanceOf(address(this));
         tokenY_in_LP = tokenY.balanceOf(address(this));
         
-        if(tokenXAmount > 0){
+        if(tokenXAmount != 0){
             outputAmount = tokenY_in_LP * (tokenXAmount * 999 / 1000) / (tokenX_in_LP + (tokenXAmount * 999 / 1000));
 
             require(outputAmount >= tokenMinimumOutputAmount, "minimum ouput amount check failed");
