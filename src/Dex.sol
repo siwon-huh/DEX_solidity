@@ -68,6 +68,14 @@ contract Dex is ERC20 {
         return (remove_tokenXAmount_in_LP, remove_tokenYAmount_in_LP);
     }
 
+
+// SWAP logic
+// (totalX + deltaX)(totalY - deltaY) = totalX * totalY = k
+// ...
+// deltaY = totalY - (totalX * totalY) / (totalX + deltaX)
+// deltaY = totalY * (1 - totalX / (totalX + deltaX))
+// deltaY = totalY * deltaX / (totalX + deltaX)
+
     function swap(uint256 tokenXAmount, uint256 tokenYAmount, uint256 tokenMinimumOutputAmount) public returns (uint256 outputAmount){
         require(!(tokenXAmount == 0 && tokenYAmount == 0), "invalid input");
         require(!(tokenXAmount != 0 && tokenYAmount != 0), "invalid input");
