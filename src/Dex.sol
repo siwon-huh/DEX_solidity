@@ -62,7 +62,7 @@ contract Dex is ERC20 {
         tokenX_in_LP = tokenX.balanceOf(address(this));
         tokenY_in_LP = tokenY.balanceOf(address(this));
         if(first_LP){
-            LPTokenAmount = Math.sqrt(tokenXAmount * tokenYAmount / decimal);
+            LPTokenAmount = Math.sqrt((tokenXAmount + tokenX_in_LP) * (tokenYAmount + tokenY_in_LP) / decimal);
             first_LP = false;
         }
         else{

@@ -1055,8 +1055,8 @@
       }
     },
     "src/Dex.sol": {
-      "lastModificationDate": 1679291353875,
-      "contentHash": "b93212e8ccfc103ec005404dd851f305",
+      "lastModificationDate": 1679305183851,
+      "contentHash": "d57d23fa4d337bf06dd9825a37e94661",
       "sourceName": "src/Dex.sol",
       "solcConfig": {
         "settings": {
@@ -1101,8 +1101,8 @@
       }
     },
     "test/Dex.t.sol": {
-      "lastModificationDate": 1679255548200,
-      "contentHash": "49f1f399408dbdd54c906c7519721120",
+      "lastModificationDate": 1679305114762,
+      "contentHash": "81f33556e63fa2f7e2cafef590df4fff",
       "sourceName": "test/Dex.t.sol",
       "solcConfig": {
         "settings": {
